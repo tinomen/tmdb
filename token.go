@@ -17,7 +17,6 @@ type Token struct {
 // NewToken creates a temporary request token that can be used to validate a TMDb user
 func (client *Client) NewToken() (string, error) {
 	url := client.URL + "/authentication/token/new?api_key=" + client.APIKey
-	// payload := strings.NewReader("{}")
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
