@@ -2,6 +2,7 @@ package themoviedb
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -26,10 +27,19 @@ func (client *Client) SearchMovie(query string, year string) ([]Movie, error) {
 
 	req, _ := http.NewRequest("GET", url, nil)
 
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return []Movie{}, err
+	}
+	if res.StatusCode != 200 {
+		return []Movie{}, fmt.Errorf("%s", "The request could not be satisfied.")
+	}
 
 	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return []Movie{}, err
+	}
 
 	var r Results
 	json.Unmarshal(body, &r)
