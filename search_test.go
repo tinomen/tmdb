@@ -60,11 +60,7 @@ func TestSearchMovie(t *testing.T) {
 	client := NewClient("xxxxxxxxxxxxxxxxxxxxxx")
 	client.URL = server.URL
 
-	// token, err := client.NewToken()
-	// if err != nil || token != "47ddb13dd075e5018d737b8e871c4bdd9c0e4611" {
-	// 	t.Errorf("Not able to get expected token")
-	// }
-	movie, err := client.SearchMovie("Joker")
+	movie, err := client.SearchMovie("Joker", "")
 	if err != nil || movie[0].Title != "Joker" {
 		t.Fail()
 	}

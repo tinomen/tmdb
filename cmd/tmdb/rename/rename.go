@@ -2,7 +2,6 @@ package rename
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -14,23 +13,73 @@ import (
 )
 
 func Command() *cobra.Command {
+	var move bool
+
 	var cmd = &cobra.Command{
-		Use:   "rename",
-		Short: "Rename",
-		Long:  `Rename`,
+		Use:   "rename <movie-file>",
+		Short: "Rename movie file",
+		Long: `Rename movie file based on TheMovieDB database.
+
+Example:
+  tmdb rename Joker.2019.720p.BluRay.x264-[YTS.LT].avi --move /media/Movies
+  File renamed to "Joker (2019).avi"
+  File moved to "/media/Movies/Joker (2019)/Joker (2019).avi"`,
+		Args: func(cmd *cobra.Command, args []string) error {
+			if len(os.Args) < 3 {
+				return fmt.Errorf("%s", "you should pass a file")
+			}
+			if _, err := os.Stat(os.Args[2]); err != nil {
+				return fmt.Errorf("file \"%s\" does not exist", os.Args[2])
+			}
+
+			if move {
+				if len(os.Args) != 5 {
+					return fmt.Errorf("with \"--move\" you should define a destination path")
+				}
+			}
+			return nil
+		},
 		Run: func(cmd *cobra.Command, args []string) {
-			str := cleanFilename(os.Args[2])
-			results := searchName(str)
-			fmt.Println(results[0])
+			file := os.Args[2]
+
+			results, err := searchName(cleanFilename(filepath.Base(file)))
+			if len(results) == 0 {
+				fmt.Println("No matches found")
+				os.Exit(0)
+			}
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(0)
+			}
+
+			// rename
+			newName := fmt.Sprintf("%s (%s)%s", results[0].Title, strings.Split(results[0].ReleaseDate, "-")[0], filepath.Ext(file))
+			if err := os.Rename(file, filepath.Dir(file)+"/"+newName); err != nil {
+				fmt.Printf("Not possible to rename file to \"%s\"", newName)
+				os.Exit(0)
+			}
+			fmt.Printf("File renamed to \"%s\"\n", newName)
+
+			// and move
+			if move {
+				if err := moveFile(filepath.Dir(file) + "/" + newName); err != nil {
+					fmt.Println(err)
+					os.Exit(0)
+				}
+
+				dst := filepath.Clean(os.Args[4]) + "/" + newName[0:len(newName)-len(filepath.Ext(file))] + "/" + newName
+				fmt.Printf("File moved to \"%s\"\n", dst)
+			}
 		},
 	}
 
+	cmd.Flags().BoolVarP(&move, "move", "m", false, "Move file to another destination")
 	return cmd
 }
 
-func cleanFilename(filename string) string {
-	extension := filepath.Ext(filename)
-	name := filename[0 : len(filename)-len(extension)]
+func cleanFilename(file string) string {
+	extension := filepath.Ext(file)
+	name := file[0 : len(file)-len(extension)]
 
 	clean1 := strings.ReplaceAll(name, ".", " ")
 	clean2 := strings.ReplaceAll(clean1, "-", " ")
@@ -39,10 +88,10 @@ func cleanFilename(filename string) string {
 	clean5 := strings.ReplaceAll(clean4, "[", " ")
 	clean6 := strings.ReplaceAll(clean5, "]", " ")
 	clean7 := strings.ReplaceAll(clean6, "  ", " ")
-	return clean7
+	return strings.TrimSpace(clean7)
 }
 
-func searchName(str string) []themoviedb.Movie {
+func searchName(str string) ([]themoviedb.Movie, error) {
 	// getting year if exists
 	r, _ := regexp.Compile("[1-2][0-9][0-9][0-9]")
 	year := r.FindString(str)
@@ -55,10 +104,10 @@ func searchName(str string) []themoviedb.Movie {
 		client := themoviedb.NewClient(fmt.Sprint(APIKey))
 		movies, err := client.SearchMovie(query, year)
 		if err != nil {
-			log.Fatal(err)
+			return []themoviedb.Movie{}, fmt.Errorf("not possible to perform a search")
 		}
 		if len(movies) != 0 {
-			return movies
+			return movies, nil
 		}
 
 		// prepare next iteration
@@ -70,5 +119,20 @@ func searchName(str string) []themoviedb.Movie {
 		}
 	}
 
-	return []themoviedb.Movie{}
+	return []themoviedb.Movie{}, nil
+}
+
+func moveFile(file string) error {
+	name := file[0 : len(file)-len(filepath.Ext(file))]
+
+	dstDir := filepath.Clean(os.Args[4]) + "/" + name
+	if err := os.MkdirAll(dstDir, os.ModePerm); err != nil {
+		return fmt.Errorf("not possible to create \"%s\"", dstDir)
+	}
+
+	if err := os.Rename(file, dstDir+"/"+filepath.Base(file)); err != nil {
+		return fmt.Errorf("not possible to move file to \"%s%s\"", dstDir, filepath.Base(file))
+	}
+
+	return nil
 }

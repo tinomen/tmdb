@@ -7,16 +7,15 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	// "github.com/spf13/viper"
 	"github.com/ssuareza/themoviedb-cli"
 	. "github.com/ssuareza/themoviedb-cli/cmd/tmdb/config"
 )
 
 func Command() *cobra.Command {
 	var cmd = &cobra.Command{
-		Use:   "search <movie>",
-		Short: "Search",
-		Long:  `Search`,
+		Use:   "search <movie> [year]",
+		Short: "Search movie",
+		Long:  `Search movie in TheMovieDB database`,
 		Args: func(cmd *cobra.Command, args []string) error {
 			if len(os.Args) < 3 {
 				return fmt.Errorf("%s", "Arguments wrong")
