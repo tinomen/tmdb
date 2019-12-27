@@ -5,12 +5,12 @@ CLI to search movies and rename files based in *TheMovieDB* database.
 ### MAC
 ```
 brew tap ssuareza/brew git@github.com:ssuareza/homebrew-brew
-brew install ssuareza/brew/gssh -f
+brew install ssuareza/brew/tmdb -f
 ```
 
 ### Linux
 ```
-curl -sLo tmdb https://github.com/ssuareza/tmdb/releases/download/v0.0.1/tmdb-v0.0.1-linux-amd64
+curl -sLo tmdb https://github.com/ssuareza/themoviedb-cli/releases/download/v0.0.1/tmdb-v0.0.1-linux-amd64
 chmod +x tmdb
 sudo mv tmdb /usr/local/bin/
 ```
