@@ -10,7 +10,7 @@ brew install ssuareza/brew/gssh -f
 
 ### Linux
 ```
-curl -sLo gssh curl -sLo tmdb https://github.com/ssuareza/tmdb/releases/download/v0.0.1/tmdb-v0.0.1-linux-amd64
+curl -sLo tmdb https://github.com/ssuareza/tmdb/releases/download/v0.0.1/tmdb-v0.0.1-linux-amd64
 chmod +x tmdb
 sudo mv tmdb /usr/local/bin/
 ```
