@@ -1,4 +1,4 @@
-### tmdb
+# tmdb
 CLI to search movies and rename files based in TheMovieDB database.
 
 ## Installation
