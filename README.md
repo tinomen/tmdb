@@ -1,5 +1,5 @@
 # tmdb
-CLI to search movies and rename files based in TheMovieDB database.
+CLI to search movies and rename files based in *TheMovieDB* database.
 
 ## Installation
 ### MAC
