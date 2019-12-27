@@ -62,12 +62,13 @@ Example:
 
 			// and move
 			if move {
-				if err := moveFile(filepath.Dir(file) + "/" + newName); err != nil {
+				dstDir := filepath.Clean(os.Args[4]) + "/" + newName[0:len(newName)-len(filepath.Ext(file))]
+				dst := dstDir + "/" + newName
+				if err := moveFile(filepath.Dir(file)+"/"+newName, dstDir); err != nil {
 					fmt.Println(err)
 					os.Exit(0)
 				}
 
-				dst := filepath.Clean(os.Args[4]) + "/" + newName[0:len(newName)-len(filepath.Ext(file))] + "/" + newName
 				fmt.Printf("File moved to \"%s\"\n", dst)
 			}
 		},
@@ -122,10 +123,10 @@ func searchName(str string) ([]themoviedb.Movie, error) {
 	return []themoviedb.Movie{}, nil
 }
 
-func moveFile(file string) error {
+func moveFile(file string, dst string) error {
 	name := file[0 : len(file)-len(filepath.Ext(file))]
 
-	dstDir := filepath.Clean(os.Args[4]) + "/" + name
+	dstDir := filepath.Clean(dst) + "/" + name
 	if err := os.MkdirAll(dstDir, os.ModePerm); err != nil {
 		return fmt.Errorf("not possible to create \"%s\"", dstDir)
 	}

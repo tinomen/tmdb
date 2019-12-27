@@ -1,8 +1,10 @@
 package rename
 
 import (
-	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCleanFilename(t *testing.T) {
@@ -17,4 +19,28 @@ func TestCleanFilename(t *testing.T) {
 	for _, test := range movies {
 		assert.Equal(t, cleanFilename(test.name), test.expected)
 	}
+}
+
+func TestMoveFile(t *testing.T) {
+	fileName := "TestMovie (2019).avi"
+	file, err := os.Create(fileName)
+	if err != nil {
+		t.Error(err)
+	}
+	file.Close()
+
+	if err := moveFile("./"+fileName, "."); err != nil {
+		t.Error("Not possible to move test file")
+	}
+
+	_, err = os.Stat("./TestMovie (2019)/" + fileName)
+	if os.IsNotExist(err) {
+		t.Error("File test does not exists")
+	}
+
+	// cleaning files
+	if err = os.RemoveAll("./TestMovie (2019)/"); err != nil {
+		t.Error("Not able to delete test directory")
+	}
+
 }
