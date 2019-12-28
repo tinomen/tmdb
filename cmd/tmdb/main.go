@@ -10,7 +10,7 @@ func main() {
 	cmd := &cobra.Command{
 		Use:   "tmdb",
 		Short: "The Movie Database CLI",
-		Long:  "Description here...",
+		Long:  "CLI to search movies and rename files based in TheMovieDB database.",
 		Run: func(cmd *cobra.Command, args []string) {
 
 		},

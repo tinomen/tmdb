@@ -124,9 +124,9 @@ func searchName(str string) ([]themoviedb.Movie, error) {
 }
 
 func moveFile(file string, dst string) error {
-	name := file[0 : len(file)-len(filepath.Ext(file))]
-
-	dstDir := filepath.Clean(dst) + "/" + name
+	filename := filepath.Base(file)
+	name := filename[0 : len(filename)-len(filepath.Ext(filename))]
+	dstDir := dst + "/" + name
 	if err := os.MkdirAll(dstDir, os.ModePerm); err != nil {
 		return fmt.Errorf("not possible to create \"%s\"", dstDir)
 	}
