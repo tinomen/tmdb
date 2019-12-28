@@ -22,18 +22,18 @@ func TestCleanFilename(t *testing.T) {
 }
 
 func TestMoveFile(t *testing.T) {
-	fileName := "./TestMovie (2019).avi"
+	fileName := "/tmp/TestMovie (2019).avi"
 	file, err := os.Create(fileName)
 	if err != nil {
 		t.Error(err)
 	}
 	file.Close()
 
-	if err := moveFile(fileName, "./"); err != nil {
+	if err := moveFile(fileName, "/tmp/TestMovie (2019)"); err != nil {
 		t.Error("Not possible to move test file")
 	}
 
-	_, err = os.Stat("./TestMovie (2019)/TestMovie (2019).avi")
+	_, err = os.Stat("/tmp/TestMovie (2019)/TestMovie (2019).avi")
 	if os.IsNotExist(err) {
 		t.Error("File test does not exists")
 	}
