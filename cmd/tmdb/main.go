@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/ssuareza/themoviedb-cli/cmd/tmdb/rename"
-	"github.com/ssuareza/themoviedb-cli/cmd/tmdb/search"
+	"github.com/ssuareza/tmdb/cmd/tmdb/rename"
+	"github.com/ssuareza/tmdb/cmd/tmdb/search"
 )
 
 func main() {

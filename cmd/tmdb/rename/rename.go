@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/ssuareza/themoviedb-cli"
-	. "github.com/ssuareza/themoviedb-cli/cmd/tmdb/config"
+	"github.com/ssuareza/tmdb"
+	. "github.com/ssuareza/tmdb/cmd/tmdb/config"
 )
 
 func Command() *cobra.Command {

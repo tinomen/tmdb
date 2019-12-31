@@ -4,7 +4,7 @@ else
     shasum=sha256sum
 endif
 
-repo=github.com/ssuareza/themoviedb-cli
+repo=github.com/ssuareza/tmdb
 version=$(shell git describe --all --dirty --long | awk -F"-|/" '/^heads/ {print $$2 "-" substr($$4, 2) "-" $$5}; /^tags/ { print $$2 }')
 build_args=-ldflags "-X main.versionString=$(version)" ./cmd/tmdb
 files=$(shell find cmd -type f)
