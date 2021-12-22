@@ -3,6 +3,7 @@ package rename
 import (
 	"fmt"
 	"os"
+	"io"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -128,8 +129,29 @@ func moveFile(file string, dst string) error {
 		return fmt.Errorf("not possible to create \"%s\"", dst)
 	}
 
-	if err := os.Rename(file, dst+"/"+filepath.Base(file)); err != nil {
-		return fmt.Errorf("not possible to move file to \"%s%s\"", dst, filepath.Base(file))
+	/*
+   Move files with os.Rename() give error "invalid cross-device link" for Docker container with Volumes.
+   We fix this creating a temporary (os.Create) file and making a copy (io.Copy).
+	*/
+	inputFile, err := os.Open(file)
+	if err != nil {
+		return fmt.Errorf("Couldn't open source file: %s", err)
+	}
+	outputFile, err := os.Create(dst+"/"+filepath.Base(file))
+	if err != nil {
+		inputFile.Close()
+		return fmt.Errorf("Couldn't open dest file: %s", err)
+	}
+	defer outputFile.Close()
+	_, err = io.Copy(outputFile, inputFile)
+	inputFile.Close()
+	if err != nil {
+		return fmt.Errorf("Writing to output file failed: %s", err)
+	}
+	// The copy was successful, so now delete the original file
+	err = os.Remove(file)
+	if err != nil {
+		return fmt.Errorf("Failed removing original file: %s", err)
 	}
 
 	return nil
